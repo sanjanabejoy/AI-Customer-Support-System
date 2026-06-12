@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cognifyr Customer Support</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+        }
+
+        button {
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+
+        #result {
+            margin-top: 20px;
+            color: green;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Customer Support Request</h1>
+
+    <input type="text" id="name" placeholder="Customer Name">
+
+    <input type="email" id="email" placeholder="Customer Email">
+
+    <textarea id="message" rows="5" placeholder="Describe your issue"></textarea>
+
+    <button onclick="submitRequest()">Submit Request</button>
+
+    <div id="result"></div>
+
+    <script>
+        async function submitRequest() {
+
+            const customer_name =
+                document.getElementById("name").value;
+
+            const customer_email =
+                document.getElementById("email").value;
+
+            const message =
+                document.getElementById("message").value;
+
+            const response = await fetch(
+                "http://localhost:5000/requests",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        customer_name,
+                        customer_email,
+                        message
+                    })
+                }
+            );
+
+            const data = await response.json();
+
+            document.getElementById("result").innerHTML =
+                "Request Submitted Successfully!";
+        }
+    </script>
+
+</body>
+</html>

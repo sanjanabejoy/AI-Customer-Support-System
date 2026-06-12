@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        button {
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Admin Dashboard</h1>
+
+    <button onclick="loadRequests()">Refresh Requests</button>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+<th>Customer</th>
+<th>Email</th>
+<th>Message</th>
+<th>Category</th>
+<th>Priority</th>
+<th>Confidence</th>
+<th>Status</th>
+<th>Created</th>
+            </tr>
+        </thead>
+
+        <tbody id="requestTable">
+        </tbody>
+    </table>
+
+    <script>
+        async function loadRequests() {
+
+            const response = await fetch(
+                "http://localhost:5000/requests"
+            );
+
+            const requests = await response.json();
+
+            const table =
+                document.getElementById("requestTable");
+
+            table.innerHTML = "";
+
+            requests.forEach(request => {
+
+                table.innerHTML += `
+                    <tr>
+                        <td>${request.id}</td>
+                        <td>${request.customer_name}</td>
+                        <td>${request.customer_email}</td>
+                        <td>${request.message}</td>
+                        <td>${request.status}</td>
+                        <td>${request.created_at}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        // Load immediately
+      async function loadRequests() {
+
+    const requestsResponse = await fetch(
+        "http://localhost:5000/requests"
+    );
+
+    const classificationsResponse = await fetch(
+        "http://localhost:5000/classifications"
+    );
+
+    const requests = await requestsResponse.json();
+    const classifications = await classificationsResponse.json();
+
+    const table =
+        document.getElementById("requestTable");
+
+    table.innerHTML = "";
+
+    requests.forEach(request => {
+
+        const ai = classifications.find(
+            c => c.request_id === request.id
+        );
+
+        table.innerHTML += `
+            <tr>
+                <td>${request.id}</td>
+                <td>${request.customer_name}</td>
+                <td>${request.customer_email}</td>
+                <td>${request.message}</td>
+
+                <td>${ai ? ai.category : "Processing..."}</td>
+                <td>${ai ? ai.priority : "-"}</td>
+                <td>${ai ? ai.confidence : "-"}</td>
+
+                <td>${request.status}</td>
+                <td>${request.created_at}</td>
+            </tr>
+        `;
+    });
+}
+
+        // Auto refresh every 5 seconds
+          setInterval(loadRequests, 5000);
+    </script>
+
+</body>
+</html>
